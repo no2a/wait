@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wait
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: wait
+  template:
+    metadata:
+      labels:
+        app: wait
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - name: main
+          image: no2a/wait:1938
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5000
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wait
+spec:
+  selector:
+    app: wait
+  type: NodePort
+  ports:
+    - port: 5000
+  #externalTrafficPolicy: Local
